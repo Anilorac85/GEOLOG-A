@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mapa del Fin del Mundo — Imprimible</title>
+<style>
+  @page { size: A3 landscape; margin: 0.8cm; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #080C14; font-family: Arial, sans-serif; color: #fff; padding: 0.6cm; }
+
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .header-title h1 { font-size: 20px; font-weight: 700; letter-spacing: 2px; color: #fff; }
+  .header-title p  { font-size: 10px; color: #64748B; letter-spacing: 1px; margin-top: 2px; }
+  .alert-pill { background: #B91C1C; color: #fff; font-size: 9px; font-weight: 700;
+    padding: 4px 12px; border-radius: 4px; letter-spacing: 1px; }
+
+  .map-wrap { position: relative; width: 100%; }
+  svg#world { width: 100%; height: auto; display: block; border-radius: 8px;
+    border: 1px solid #1E3A5F; }
+
+  /* Threat markers */
+  .marker { position: absolute; transform: translate(-50%, -50%); text-align: center; cursor: default; }
+  .marker-dot { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid #fff;
+    margin: 0 auto 2px; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; animation: throb 2s ease-in-out infinite; }
+  @keyframes throb { 0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.4)} 50%{box-shadow:0 0 0 6px rgba(255,255,255,0)} }
+  .marker-ring { position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid;
+    animation: ring-out 2s ease-out infinite; opacity: 0; }
+  @keyframes ring-out { 0%{transform:translateX(-50%) scale(1);opacity:.8} 100%{transform:translateX(-50%) scale(2.8);opacity:0} }
+  .marker-label { font-size: 7.5px; font-weight: 700; letter-spacing: .5px;
+    background: rgba(8,12,20,.85); padding: 2px 5px; border-radius: 3px;
+    white-space: nowrap; margin-top: 1px; }
+  .marker-sub { font-size: 6.5px; color: #94A3B8; white-space: nowrap; }
+
+  /* Legend */
+  .legend { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; margin-top: 7px; }
+  .leg-card { background: #0F1729; border-radius: 6px; padding: 7px 8px;
+    border: 1px solid; display: flex; gap: 6px; align-items: flex-start; }
+  .leg-icon { font-size: 18px; flex-shrink: 0; }
+  .leg-code { font-size: 8px; font-weight: 700; letter-spacing: .8px; margin-bottom: 1px; }
+  .leg-title { font-size: 9px; font-weight: 700; color: #fff; margin-bottom: 1px; }
+  .leg-place { font-size: 8px; color: #94A3B8; }
+  .leg-impact { font-size: 7.5px; margin-top: 3px; font-weight: 700; }
+
+  .footer { display: flex; justify-content: space-between; align-items: center;
+    margin-top: 6px; padding-top: 4px; border-top: 1px solid #1E3A5F; }
+  .footer p { font-size: 8px; color: #475569; }
+  .footer strong { color: #93C5FD; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">
+    <h1>🌍 EL MAPA DEL FIN DEL MUNDO</h1>
+    <p>GEOLOGÍA: GOOGLE EARTH SURVIVAL · OPERACIÓN GEOLÓGICA GLOBAL · 5 AMENAZAS ACTIVAS</p>
+  </div>
+  <div class="alert-pill">⚠ ALERTA NIVEL OMEGA</div>
+</div>
+
+<div class="map-wrap" id="map-wrap">
+  <!-- Simplified SVG World Map -->
+  <svg id="world" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1000" height="500" fill="#0A1628"/>
+    <!-- Ocean grid lines -->
+    <g stroke="#0D2040" stroke-width="0.5" opacity="0.6">
+      <line x1="0" y1="100" x2="1000" y2="100"/>
+      <line x1="0" y1="200" x2="1000" y2="200"/>
+      <line x1="0" y1="300" x2="1000" y2="300"/>
+      <line x1="0" y1="400" x2="1000" y2="400"/>
+      <line x1="200" y1="0" x2="200" y2="500"/>
+      <line x1="400" y1="0" x2="400" y2="500"/>
+      <line x1="600" y1="0" x2="600" y2="500"/>
+      <line x1="800" y1="0" x2="800" y2="500"/>
+    </g>
+    <!-- Equator -->
+    <line x1="0" y1="250" x2="1000" y2="250" stroke="#1E3A5F" stroke-width="1" stroke-dasharray="8,4"/>
+
+    <!-- CONTINENTS (simplified polygons) -->
+    <g fill="#1A2E4A" stroke="#2A4060" stroke-width="0.8">
+      <!-- North America -->
+      <path d="M 80,60 L 160,50 L 200,70 L 220,90 L 240,120 L 260,160 L 250,200 L 230,230 L 210,250 L 180,260 L 160,280 L 140,300 L 120,290 L 100,270 L 80,240 L 60,210 L 50,180 L 55,150 L 65,110 L 75,80 Z"/>
+      <!-- Greenland -->
+      <path d="M 160,20 L 200,15 L 220,30 L 215,50 L 195,55 L 165,45 Z"/>
+      <!-- South America -->
+      <path d="M 210,270 L 240,260 L 265,270 L 280,300 L 285,340 L 275,380 L 255,410 L 230,430 L 210,420 L 195,390 L 190,350 L 195,310 Z"/>
+      <!-- Europe -->
+      <path d="M 450,60 L 490,50 L 520,60 L 530,80 L 520,100 L 500,110 L 480,115 L 460,110 L 445,95 L 440,75 Z"/>
+      <!-- Scandinavia -->
+      <path d="M 460,30 L 490,25 L 510,35 L 505,55 L 490,60 L 465,55 Z"/>
+      <!-- Africa -->
+      <path d="M 450,120 L 510,110 L 545,120 L 560,155 L 565,200 L 560,250 L 545,300 L 525,340 L 500,370 L 475,375 L 450,355 L 435,310 L 430,260 L 435,200 L 440,155 Z"/>
+      <!-- Middle East / West Asia -->
+      <path d="M 545,100 L 590,90 L 620,100 L 630,120 L 615,140 L 580,145 L 550,140 L 535,125 Z"/>
+      <!-- Russia / N Asia -->
+      <path d="M 510,30 L 600,20 L 700,25 L 780,30 L 820,45 L 840,65 L 820,80 L 780,85 L 720,80 L 660,85 L 610,90 L 570,85 L 535,75 L 510,55 Z"/>
+      <!-- South Asia -->
+      <path d="M 600,110 L 650,105 L 680,115 L 690,140 L 680,165 L 660,175 L 635,170 L 615,155 L 605,130 Z"/>
+      <!-- Southeast Asia / Indonesia -->
+      <path d="M 680,160 L 730,150 L 760,160 L 770,180 L 755,200 L 720,205 L 690,195 L 675,178 Z"/>
+      <path d="M 760,185 L 790,178 L 810,188 L 808,205 L 785,210 L 762,202 Z"/>
+      <path d="M 720,210 L 760,205 L 780,215 L 775,230 L 745,235 L 720,225 Z"/>
+      <!-- China / E Asia -->
+      <path d="M 680,80 L 750,70 L 790,78 L 800,100 L 795,130 L 770,148 L 730,152 L 695,145 L 672,125 L 668,100 Z"/>
+      <!-- Japan -->
+      <path d="M 810,80 L 825,75 L 835,88 L 825,100 L 812,97 Z"/>
+      <path d="M 820,65 L 835,60 L 842,72 L 832,78 L 820,74 Z"/>
+      <!-- Australia -->
+      <path d="M 740,300 L 800,285 L 850,290 L 880,310 L 890,350 L 875,390 L 840,410 L 795,415 L 755,400 L 730,370 L 725,335 Z"/>
+      <!-- New Zealand -->
+      <path d="M 905,380 L 918,370 L 928,382 L 920,398 L 907,395 Z"/>
+      <path d="M 912,360 L 922,350 L 930,360 L 924,373 L 913,370 Z"/>
+    </g>
+
+    <!-- Tectonic plate outlines (subtle) -->
+    <g stroke="#B91C1C" stroke-width="0.6" stroke-dasharray="5,4" fill="none" opacity="0.3">
+      <!-- Pacific plate boundary (Ring of Fire) -->
+      <path d="M 100,70 L 90,150 L 95,230 L 110,280 L 150,310 L 200,330 L 240,340 L 280,340 L 320,320 L 360,280 L 390,240 L 400,200 L 400,160 L 390,120 L 370,90 L 340,70 L 300,55 L 250,48 L 200,50 L 150,55 L 120,60 Z"/>
+      <!-- San Andreas area -->
+      <path d="M 95,145 L 110,180 L 118,220"/>
+      <!-- Cascadia -->
+      <path d="M 88,110 L 92,145"/>
+      <!-- Yellowstone area -->
+      <path d="M 150,130 L 155,160"/>
+    </g>
+
+    <!-- Threat pulse rings (SVG animated circles) -->
+    <g>
+      <!-- ALFA: Yellowstone 44.45N 110.58W → x≈152, y≈140 -->
+      <circle cx="152" cy="140" r="4" fill="#B91C1C" opacity="0.9"/>
+      <circle cx="152" cy="140" r="4" fill="none" stroke="#B91C1C" stroke-width="1.5">
+        <animate attributeName="r" values="4;18" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0" dur="2s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- BETA: San Andreas 34.18N 118.3W → x≈108, y≈177 -->
+      <circle cx="108" cy="177" r="4" fill="#1D4ED8" opacity="0.9"/>
+      <circle cx="108" cy="177" r="4" fill="none" stroke="#1D4ED8" stroke-width="1.5">
+        <animate attributeName="r" values="4;18" dur="2.2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0" dur="2.2s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- GAMMA: Cascadia 46.25N 124.5W → x≈90, y≈148 -->
+      <circle cx="90" cy="148" r="4" fill="#0F766E" opacity="0.9"/>
+      <circle cx="90" cy="148" r="4" fill="none" stroke="#0F766E" stroke-width="1.5">
+        <animate attributeName="r" values="4;18" dur="1.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0" dur="1.8s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- DELTA: Cumbre Vieja 28.57N 17.83W → x≈448, y≈187 -->
+      <circle cx="448" cy="187" r="4" fill="#B45309" opacity="0.9"/>
+      <circle cx="448" cy="187" r="4" fill="none" stroke="#B45309" stroke-width="1.5">
+        <animate attributeName="r" values="4;18" dur="2.5s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0" dur="2.5s" repeatCount="indefinite"/>
+      </circle>
+
+      <!-- ÉPSILON: Jakarta 6.2S 106.82E → x≈745, y≈272 -->
+      <circle cx="745" cy="272" r="4" fill="#6D28D9" opacity="0.9"/>
+      <circle cx="745" cy="272" r="4" fill="none" stroke="#6D28D9" stroke-width="1.5">
+        <animate attributeName="r" values="4;18" dur="2.1s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.9;0" dur="2.1s" repeatCount="indefinite"/>
+      </circle>
+    </g>
+
+    <!-- Labels on map -->
+    <g font-family="Arial" font-size="8" fill="#94A3B8">
+      <text x="155" y="103">NORTE</text>
+      <text x="130" y="108">AMÉRICA</text>
+      <text x="228" y="340">SUR</text>
+      <text x="215" y="350">AMÉRICA</text>
+      <text x="468" y="175">EUROPA</text>
+      <text x="470" y="255">ÁFRICA</text>
+      <text x="598" y="140">ASIA</text>
+      <text x="775" y="350">AUSTRALIA</text>
+    </g>
+
+    <!-- Threat labels on map -->
+    <g font-family="Arial" font-weight="700" font-size="7.5">
+      <!-- ALFA -->
+      <rect x="115" y="107" width="50" height="14" rx="3" fill="rgba(185,28,28,0.85)"/>
+      <text x="140" y="117" fill="white" text-anchor="middle">🌋 ALFA</text>
+      <line x1="152" y1="122" x2="152" y2="136" stroke="#B91C1C" stroke-width="0.8"/>
+
+      <!-- BETA -->
+      <rect x="65" y="161" width="52" height="14" rx="3" fill="rgba(29,78,216,0.85)"/>
+      <text x="91" y="171" fill="white" text-anchor="middle">⚡ BETA</text>
+      <line x1="108" y1="175" x2="108" y2="163" stroke="#1D4ED8" stroke-width="0.8"/>
+
+      <!-- GAMMA -->
+      <rect x="48" y="151" width="58" height="14" rx="3" fill="rgba(15,118,110,0.85)"/>
+      <text x="77" y="161" fill="white" text-anchor="middle">🌊 GAMMA</text>
+      <line x1="90" y1="151" x2="90" y2="148" stroke="#0F766E" stroke-width="0.8"/>
+
+      <!-- DELTA -->
+      <rect x="410" y="173" width="52" height="14" rx="3" fill="rgba(180,83,9,0.85)"/>
+      <text x="436" y="183" fill="white" text-anchor="middle">⛰ DELTA</text>
+      <line x1="448" y1="187" x2="448" y2="187" stroke="#B45309" stroke-width="0.8"/>
+
+      <!-- EPSILON -->
+      <rect x="705" y="258" width="68" height="14" rx="3" fill="rgba(109,40,217,0.85)"/>
+      <text x="739" y="268" fill="white" text-anchor="middle">🏝 ÉPSILON</text>
+      <line x1="745" y1="272" x2="745" y2="272" stroke="#6D28D9" stroke-width="0.8"/>
+    </g>
+  </svg>
+</div>
+
+<div class="legend">
+  <div class="leg-card" style="border-color:#B91C1C">
+    <div class="leg-icon">🌋</div>
+    <div>
+      <div class="leg-code" style="color:#FCA5A5">MISIÓN ALFA</div>
+      <div class="leg-title">Supervolcán</div>
+      <div class="leg-place">Yellowstone, EE.UU.</div>
+      <div class="leg-impact" style="color:#FCA5A5">Extinción continental</div>
+    </div>
+  </div>
+  <div class="leg-card" style="border-color:#1D4ED8">
+    <div class="leg-icon">⚡</div>
+    <div>
+      <div class="leg-code" style="color:#93C5FD">MISIÓN BETA</div>
+      <div class="leg-title">Megaterremoto</div>
+      <div class="leg-place">Falla S. Andrés, California</div>
+      <div class="leg-impact" style="color:#93C5FD">40 millones en riesgo</div>
+    </div>
+  </div>
+  <div class="leg-card" style="border-color:#0F766E">
+    <div class="leg-icon">🌊</div>
+    <div>
+      <div class="leg-code" style="color:#5EEAD4">MISIÓN GAMMA</div>
+      <div class="leg-title">Megatsunami</div>
+      <div class="leg-place">Cascadia, Pacífico Norte</div>
+      <div class="leg-impact" style="color:#5EEAD4">Olas de 30 metros</div>
+    </div>
+  </div>
+  <div class="leg-card" style="border-color:#B45309">
+    <div class="leg-icon">⛰️</div>
+    <div>
+      <div class="leg-code" style="color:#FCD34D">MISIÓN DELTA</div>
+      <div class="leg-title">Megadeslizamiento</div>
+      <div class="leg-place">Cumbre Vieja, Canarias</div>
+      <div class="leg-impact" style="color:#FCD34D">Megatsunami atlántico</div>
+    </div>
+  </div>
+  <div class="leg-card" style="border-color:#6D28D9">
+    <div class="leg-icon">🏝️</div>
+    <div>
+      <div class="leg-code" style="color:#C4B5FD">MISIÓN ÉPSILON</div>
+      <div class="leg-title">Hundimiento</div>
+      <div class="leg-place">Yakarta, Indonesia</div>
+      <div class="leg-impact" style="color:#C4B5FD">34M personas hundidas</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <p>🎓 Actividad diseñada para estudiantes de 15–17 años · Duración: 90 min · Cada equipo investiga una amenaza en <strong>Google Earth</strong></p>
+  <p>Referencia: <strong>Servicio Geológico Colombiano — sgc.gov.co</strong></p>
+</div>
+
+</body>
+</html>
