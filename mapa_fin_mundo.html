@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geología: El Mapa del Fin del Mundo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080c14;color:#e2e8f0;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh}
+.screen{display:none;min-height:100vh}
+.screen.active{display:flex;flex-direction:column}
+
+/* INTRO */
+#screen-intro{background:#080c14;align-items:center;justify-content:center;padding:2rem;text-align:center;position:relative;overflow:hidden}
+.stars{position:absolute;inset:0;background:radial-gradient(ellipse at 20% 20%,#0d1b2a 0%,#080c14 60%);pointer-events:none}
+.alert-ribbon{background:#b91c1c;color:#fff;font-size:11px;font-weight:700;letter-spacing:.15em;padding:8px 24px;border-radius:4px;margin-bottom:1.5rem;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.65}}
+.main-title{font-size:2.2rem;font-weight:700;color:#fff;line-height:1.15;margin-bottom:.5rem;text-shadow:0 0 40px #b91c1c44}
+.main-title span{color:#ef4444}
+.main-sub{font-size:1rem;color:#64748b;margin-bottom:2rem;line-height:1.6}
+.setup-box{background:#0f1729;border:1px solid #1e3a5f;border-radius:16px;padding:1.75rem;width:100%;max-width:460px;text-align:left}
+.setup-box h3{font-size:.75rem;font-weight:600;color:#64748b;letter-spacing:.1em;margin-bottom:1.25rem}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:.75rem;color:#94a3b8;margin-bottom:.35rem}
+.field input,.field select{width:100%;background:#080c14;border:1px solid #1e3a5f;border-radius:8px;padding:10px 13px;color:#e2e8f0;font-size:.9rem;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:#3b82f6}
+.names-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.btn-launch{width:100%;background:#b91c1c;border:none;color:#fff;font-size:1rem;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;letter-spacing:.05em;margin-top:1.25rem;transition:background .2s}
+.btn-launch:hover{background:#991b1b}
+.threat-preview{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:1.5rem;max-width:460px;width:100%}
+.tp-item{background:#0f1729;border:1px solid #1e3a5f;border-radius:10px;padding:.75rem .5rem;text-align:center}
+.tp-icon{font-size:1.5rem;margin-bottom:.25rem}
+.tp-label{font-size:.65rem;color:#64748b;line-height:1.3}
+
+/* MISSION HEADER */
+.m-header{background:#0a0f1e;border-bottom:1px solid #1e3a5f;padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-shrink:0}
+.m-team{background:#1e3a5f;border-radius:8px;padding:5px 12px;font-size:.8rem;color:#94a3b8}
+.m-team strong{color:#e2e8f0}
+.m-timer{background:#1a0a0a;border:1px solid #b91c1c;border-radius:8px;padding:5px 14px;font-size:.95rem;font-weight:700;color:#fca5a5;min-width:70px;text-align:center;transition:all .3s}
+.m-timer.warn{background:#2d0a0a;color:#f87171}
+
+/* MISSION BODY */
+.m-body{flex:1;overflow-y:auto;padding:1.25rem}
+.mission-hero{border-radius:14px;padding:1.5rem;margin-bottom:1rem}
+.m-tag{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:4px 10px;border-radius:4px;margin-bottom:.75rem}
+.m-hero-title{font-size:1.25rem;font-weight:700;color:#fff;margin-bottom:.5rem;line-height:1.3}
+.m-hero-desc{font-size:.85rem;line-height:1.65;margin-bottom:1rem}
+.coords{display:inline-block;background:#080c14;border:1px solid #334155;border-radius:8px;padding:5px 12px;font-family:monospace;font-size:.82rem;color:#34d399;margin-bottom:.75rem}
+.hint-block{background:#080c14;border-left:3px solid #3b82f6;border-radius:0 8px 8px 0;padding:.85rem 1rem;font-size:.82rem;color:#94a3b8;line-height:1.6}
+.hint-block strong{color:#93c5fd}
+.hint-block .geo-context{color:#6ee7b7;font-style:italic;margin-top:.4rem;display:block}
+
+/* GLOSSARY */
+.gloss-btn{width:100%;background:#111827;border:1px solid #1e3a5f;border-radius:10px;color:#94a3b8;font-size:.82rem;padding:9px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;transition:background .2s}
+.gloss-btn:hover{background:#1a2535}
+.gloss-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem}
+@media(max-width:600px){.gloss-grid{grid-template-columns:1fr}}
+.g-card{background:#0a0f1e;border:1px solid #1e3a5f;border-radius:8px;padding:.65rem .85rem}
+.g-term{font-size:.75rem;font-weight:700;color:#fbbf24;margin-bottom:2px}
+.g-def{font-size:.72rem;color:#64748b;line-height:1.5}
+
+/* FORM */
+.form-section{background:#0f1729;border:1px solid #1e3a5f;border-radius:12px;padding:1.25rem;margin-bottom:.9rem}
+.form-section h3{font-size:.7rem;font-weight:700;color:#64748b;letter-spacing:.1em;margin-bottom:1rem;display:flex;align-items:center;gap:6px}
+.form-section h3 span{font-size:1rem}
+.frow{margin-bottom:.85rem}
+.frow label{display:block;font-size:.75rem;color:#94a3b8;margin-bottom:.3rem}
+.frow textarea,.frow input[type=text]{width:100%;background:#080c14;border:1px solid #1e3a5f;border-radius:8px;padding:9px 12px;color:#e2e8f0;font-size:.85rem;outline:none;resize:vertical;transition:border-color .2s}
+.frow textarea:focus,.frow input[type=text]:focus{border-color:#3b82f6}
+.frow textarea{min-height:72px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.radio-row{display:flex;flex-wrap:wrap;gap:6px}
+.rbtn{background:#080c14;border:1px solid #1e3a5f;border-radius:7px;padding:6px 12px;font-size:.78rem;color:#94a3b8;cursor:pointer;transition:all .15s}
+.rbtn.sel{background:#1e3a5f;border-color:#3b82f6;color:#93c5fd}
+.prog-wrap{margin:.75rem 0 .35rem}
+.prog-bar{height:4px;background:#1e3a5f;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#3b82f6;border-radius:2px;transition:width .4s}
+.prog-lbl{font-size:.7rem;color:#64748b;display:flex;justify-content:space-between;margin-top:.3rem}
+.btn-send{width:100%;background:#1d4ed8;border:none;color:#fff;font-size:.95rem;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;margin-top:.5rem;transition:background .2s}
+.btn-send:hover:not(:disabled){background:#1e40af}
+.btn-send:disabled{background:#1e3a5f;color:#475569;cursor:not-allowed}
+
+/* RESULTS */
+#screen-results{background:#080c14;padding:1.5rem;align-items:center}
+.result-wrap{max-width:700px;width:100%}
+.result-success{text-align:center;margin-bottom:1.5rem}
+.result-success .big-check{font-size:3rem;margin-bottom:.5rem}
+.result-card{background:#0f1729;border:1px solid #1e3a5f;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.rf{margin-bottom:.7rem}
+.rf .rl{font-size:.68rem;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:2px}
+.rf .rv{font-size:.88rem;color:#cbd5e1;line-height:1.5}
+.rf .rv.big{font-size:1.1rem;color:#fff;font-weight:600}
+.risk-pill{display:inline-block;padding:3px 12px;border-radius:20px;font-size:.75rem;font-weight:700}
+.present-box{background:#0a1628;border:1px solid #1d4ed8;border-radius:12px;padding:1.25rem;text-align:center;margin-top:1rem}
+.present-box p{font-size:.85rem;color:#64748b;margin-bottom:.35rem}
+.present-steps{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-top:.75rem}
+.present-step{background:#1e3a5f;border-radius:8px;padding:8px 14px;font-size:.78rem;color:#93c5fd}
+.btn-reset{background:#1e3a5f;border:none;color:#93c5fd;padding:9px 22px;border-radius:8px;font-size:.82rem;cursor:pointer;margin-top:1rem}
+.btn-reset:hover{background:#2d4f7a}
+
+/* WORLD MAP */
+.worldmap-wrap{max-width:460px;width:100%;margin-top:1rem}
+.world-label{font-size:.7rem;color:#475569;letter-spacing:.08em;margin-bottom:.5rem;text-align:center}
+.world-svg{width:100%;border-radius:10px;background:#0a0f1e;border:1px solid #1e3a5f;padding:.5rem}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:#080c14}
+::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ INTRO ═══════════════════════════════════ -->
+<div class="screen active" id="screen-intro">
+<div class="stars"></div>
+<div class="alert-ribbon">⚠ ALERTA NIVEL OMEGA — AMENAZAS GEOLÓGICAS ACTIVAS EN 5 CONTINENTES</div>
+<div style="font-size:4rem;margin-bottom:.75rem;animation:spin 25s linear infinite">🌍</div>
+<h1 class="main-title">Geología:<br><span>El Mapa del Fin del Mundo</span></h1>
+<p class="main-sub">Sistema de Inteligencia Geológica Global · Operación Google Earth<br>Tu equipo tiene 90 minutos para analizar una amenaza real y salvar vidas.</p>
+
+<div class="threat-preview">
+  <div class="tp-item"><div class="tp-icon">🌋</div><div class="tp-label">Supervolcán</div></div>
+  <div class="tp-item"><div class="tp-icon">⚡</div><div class="tp-label">Megaterremoto</div></div>
+  <div class="tp-item"><div class="tp-icon">🌊</div><div class="tp-label">Tsunami</div></div>
+  <div class="tp-item"><div class="tp-icon">⛰️</div><div class="tp-label">Deslizamiento</div></div>
+  <div class="tp-item"><div class="tp-icon">🏝️</div><div class="tp-label">Hundimiento</div></div>
+</div>
+
+<div class="setup-box" style="margin-top:1.5rem">
+  <h3>REGISTRO DE AGENTES — INGRESA TU EQUIPO</h3>
+  <div class="field">
+    <label>Nombre del equipo (¡ponle un nombre épico!)</label>
+    <input type="text" id="team-name" placeholder="Ej: Los Cazadores de Fallas" maxlength="35">
+  </div>
+  <div class="field">
+    <label>Nombres de los 3 agentes</label>
+    <div class="names-row">
+      <input type="text" id="m1" placeholder="Agente 1">
+      <input type="text" id="m2" placeholder="Agente 2">
+      <input type="text" id="m3" placeholder="Agente 3">
+    </div>
+  </div>
+  <div class="field">
+    <label>Amenaza asignada por el profesor</label>
+    <select id="mission-sel">
+      <option value="">— Selecciona tu misión —</option>
+      <option value="0">🌋 Misión ALFA — Supervolcán: Yellowstone, EE.UU.</option>
+      <option value="1">⚡ Misión BETA — Megaterremoto: Falla de San Andrés, California</option>
+      <option value="2">🌊 Misión GAMMA — Tsunami: Zona de subducción de Cascadia, Pacífico Norte</option>
+      <option value="3">⛰️ Misión DELTA — Deslizamiento masivo: Cumbre Vieja, Canarias</option>
+      <option value="4">🏝️ Misión ÉPSILON — Hundimiento: Yakarta, Indonesia</option>
+    </select>
+  </div>
+  <button class="btn-launch" onclick="startMission()">⚡ ACTIVAR MISIÓN</button>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ MISSION ═══════════════════════════════════ -->
+<div class="screen" id="screen-mission">
+<div class="m-header">
+  <div class="m-team">Equipo: <strong id="hdr-team">—</strong></div>
+  <div class="m-timer" id="timer-el">90:00</div>
+</div>
+<div class="m-body">
+
+  <div class="mission-hero" id="mission-hero"></div>
+
+  <button class="gloss-btn" onclick="toggleGloss()" id="gloss-btn">
+    <span>📖 &nbsp;Diccionario del geólogo — 8 términos para tu misión</span>
+    <span id="gloss-arrow">▼</span>
+  </button>
+  <div id="gloss-panel" style="display:none">
+    <div class="gloss-grid" id="gloss-grid"></div>
+  </div>
+
+  <div class="prog-wrap">
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="prog-lbl"><span>Progreso del informe</span><span id="prog-txt">0 / 6</span></div>
+  </div>
+
+  <div class="form-section">
+    <h3><span>📍</span> LOCALIZACIÓN EN GOOGLE EARTH</h3>
+    <div class="frow">
+      <label>Nombre exacto del lugar que encontraste</label>
+      <input type="text" id="f-lugar" placeholder="Ej: Caldera de Yellowstone, Wyoming, EE.UU." oninput="updProg()">
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Latitud</label><input type="text" id="f-lat" placeholder="Ej: 44.43°N" oninput="updProg()"></div>
+      <div class="frow"><label>Longitud</label><input type="text" id="f-lon" placeholder="Ej: 110.58°W" oninput="updProg()"></div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3><span>🔴</span> IDENTIFICACIÓN DE LA AMENAZA</h3>
+    <div class="frow">
+      <label>¿Qué ves en Google Earth que evidencia el peligro? (sé específico)</label>
+      <textarea id="f-ev" placeholder="Describe exactamente lo que observas: formas del terreno, colores, estructuras, comparación histórica..." oninput="updProg()"></textarea>
+    </div>
+    <div class="frow">
+      <label>Nivel de riesgo para la población</label>
+      <div class="radio-row" id="rg-risk">
+        <span class="rbtn" onclick="selR(this,'risk')">Moderado</span>
+        <span class="rbtn" onclick="selR(this,'risk')">Alto</span>
+        <span class="rbtn" onclick="selR(this,'risk')">Catastrófico</span>
+        <span class="rbtn" onclick="selR(this,'risk')">Extinción regional</span>
+      </div>
+    </div>
+    <div class="frow">
+      <label>¿Por qué ocurre esta amenaza exactamente en este punto del planeta? (usa geología)</label>
+      <textarea id="f-why" placeholder="Relaciona la ubicación con placas tectónicas, fallas, volcanes, tipo de roca, etc." oninput="updProg()"></textarea>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3><span>💀</span> ANÁLISIS DE IMPACTO</h3>
+    <div class="frow">
+      <label>Población en zona de peligro directo</label>
+      <div class="radio-row" id="rg-pop">
+        <span class="rbtn" onclick="selR(this,'pop')">Menos de 100.000</span>
+        <span class="rbtn" onclick="selR(this,'pop')">100.000 – 1 millón</span>
+        <span class="rbtn" onclick="selR(this,'pop')">1 – 10 millones</span>
+        <span class="rbtn" onclick="selR(this,'pop')">Más de 10 millones</span>
+      </div>
+    </div>
+    <div class="frow">
+      <label>¿Qué ciudades o regiones quedarían destruidas? (busca en Google Earth)</label>
+      <textarea id="f-cities" placeholder="Lista las ciudades que quedarían en la zona de impacto y estima cuánta gente afectaría..." oninput="updProg()"></textarea>
+    </div>
+    <div class="frow">
+      <label>Tiempo estimado de alerta antes del desastre</label>
+      <div class="radio-row" id="rg-time">
+        <span class="rbtn" onclick="selR(this,'time')">Sin aviso (segundos)</span>
+        <span class="rbtn" onclick="selR(this,'time')">Horas</span>
+        <span class="rbtn" onclick="selR(this,'time')">Días</span>
+        <span class="rbtn" onclick="selR(this,'time')">Años (monitoreo)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3><span>🚁</span> PLAN DE SUPERVIVENCIA</h3>
+    <div class="frow">
+      <label>Ruta de evacuación: ¿a dónde y por qué ese camino? (usa Google Earth para trazarla)</label>
+      <textarea id="f-ruta" placeholder="Describe la ruta, las vías que usarías, hacia dónde alejarías a la gente y por qué ese terreno es más seguro..." oninput="updProg()"></textarea>
+    </div>
+    <div class="frow">
+      <label>¿Qué haría un geólogo real para monitorear esta amenaza? (sensores, alertas, estudios)</label>
+      <textarea id="f-geo" placeholder="Ej: instalaría sismógrafos, mediría deformación del suelo con GPS, monitorearía gases volcánicos, establecería zonas de exclusión..." oninput="updProg()"></textarea>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3><span>🏆</span> ARGUMENTO FINAL</h3>
+    <div class="frow">
+      <label>En 2–3 frases: convence al salón de que TU amenaza es la más peligrosa del mundo</label>
+      <textarea id="f-arg" placeholder="Usa datos, cifras, nombres de lugares y términos geológicos para defender tu posición..." style="min-height:80px" oninput="updProg()"></textarea>
+    </div>
+  </div>
+
+  <button class="btn-send" id="btn-send" onclick="submitReport()" disabled>
+    📡 &nbsp;Enviar informe al comando central
+  </button>
+</div>
+</div>
+
+<!-- ═══════════════════════════════════ RESULTS ═══════════════════════════════════ -->
+<div class="screen" id="screen-results">
+<div class="result-wrap">
+  <div class="result-success">
+    <div class="big-check">✅</div>
+    <h2 style="font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:.25rem">Informe enviado al Comando Central</h2>
+    <p style="font-size:.85rem;color:#64748b">Prepárate para presentar en 3 minutos. Aquí está tu resumen.</p>
+  </div>
+  <div class="result-card" id="result-main"></div>
+  <div class="result-card" id="result-terms"></div>
+  <div class="present-box">
+    <p style="color:#93c5fd;font-weight:600;font-size:.9rem">CUANDO EL PROFESOR TE DÉ LA SEÑAL, PRESENTA:</p>
+    <div class="present-steps">
+      <div class="present-step">1. Muestra la zona en Google Earth</div>
+      <div class="present-step">2. Explica la amenaza con geología</div>
+      <div class="present-step">3. Muestra tu ruta de evacuación</div>
+      <div class="present-step">4. Defiende: ¿por qué es la más peligrosa?</div>
+    </div>
+    <button class="btn-reset" onclick="resetApp()">↩ Nueva misión</button>
+  </div>
+</div>
+</div>
+
+<style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
+
+<script>
+const MISSIONS=[
+  {
+    id:0,icon:"🌋",code:"ALFA",
+    color:"#b91c1c",tagBg:"rgba(185,28,28,.18)",tagTxt:"#fca5a5",
+    name:"Caldera de Yellowstone, Wyoming EE.UU.",
+    title:"El supervolcán que puede borrar Norteamérica",
+    desc:"Bajo el famoso Parque Yellowstone duerme uno de los supervolcanes más grandes de la Tierra. Su caldera mide 72 × 55 km. La última gran erupción fue hace 640.000 años y lanzó 1.000 km³ de roca. Si entrara en erupción hoy, cubriría de ceniza todo EE.UU. y provocaría un invierno volcánico global.",
+    coords:"44°27'N, 110°34'W",
+    hint:"<strong>Qué buscar en Google Earth:</strong> La enorme depresión de la caldera (el lago Yellowstone está DENTRO de ella), los géiseres como Old Faithful, el color amarillento del suelo por azufre, las carreteras evacuadas en caso de alerta. Activa la capa 3D y observa la depresión.",
+    geo:"Yellowstone está sobre un punto caliente (hotspot) del manto. El magma asciende y forma una cámara magmática gigante a solo 8 km de profundidad, deformando el suelo varios cm al año.",
+    film:"🎬 <strong>Películas de referencia:</strong> <em>2012</em> (2009) — la primera catástrofe es exactamente la erupción de Yellowstone. También: <em>Supervolcano</em> (BBC, 2005), documental dramático."
+  },
+  {
+    id:1,icon:"⚡",code:"BETA",
+    color:"#1d4ed8",tagBg:"rgba(29,78,216,.18)",tagTxt:"#93c5fd",
+    name:"Falla de San Andrés, California EE.UU.",
+    title:"La falla que puede partir California en dos",
+    desc:"1.300 km de fractura en la corteza terrestre. Los expertos la llaman 'The Big One': un terremoto M8.2+ que destruirá Los Ángeles, San Francisco y las ciudades más ricas del mundo. Se espera en los próximos 30 años con 99% de probabilidad. 40 millones de personas en la zona.",
+    coords:"34°11'N, 118°20'W",
+    hint:"<strong>Qué buscar en Google Earth:</strong> La línea de la falla es VISIBLE desde el espacio — busca valles rectos, lagunas alineadas, montañas cortadas abruptamente. Encuentra el lago Cahuilla (hoy desierto de Salton Sea) y el punto donde la falla divide el estado. Mide la distancia entre Los Ángeles y la falla.",
+    geo:"Es una falla transformante: la placa del Pacífico se desliza hacia el norte a 5 cm/año respecto a la placa Norteamericana. La energía acumulada desde 1906 (último gran terremoto) es enorme.",
+    film:"🎬 <strong>Películas de referencia:</strong> <em>San Andreas</em> (2015) con Dwayne Johnson — el escenario que muestra es geológicamente posible. También: <em>Earthquake</em> (1974)."
+  },
+  {
+    id:2,icon:"🌊",code:"GAMMA",
+    color:"#0f766e",tagBg:"rgba(15,118,110,.18)",tagTxt:"#5eead4",
+    name:"Zona de subducción de Cascadia, Costa NW EE.UU.",
+    title:"El tsunami que borrará Seattle y Portland",
+    desc:"Frente a la costa de Oregon y Washington, la placa Juan de Fuca se hunde bajo Norteamérica. En 1700, un terremoto M9.0 aquí generó un tsunami que destruyó todo el Pacífico Norte. Hoy Seattle, Portland y Vancouver, con 10 millones de habitantes, están en la trayectoria directa. Se espera que vuelva a ocurrir.",
+    coords:"46°15'N, 124°30'W",
+    hint:"<strong>Qué buscar en Google Earth:</strong> La fosa submarina de Cascadia (busca en el océano frente a Oregon, el suelo marino baja drásticamente). Las llanuras costeras planas donde el tsunami golpearía. Las carreteras de evacuación marcadas en las ciudades costeras. Compara la elevación del suelo con la altura estimada de las olas (18–30 m).",
+    geo:"La placa Juan de Fuca (oceánica, más densa) se hunde bajo la placa Norteamericana (continental). Zona de subducción clásica. Cuando el bloque bloqueado se libera, el fondo marino sube varios metros en segundos, generando el tsunami.",
+    film:"🎬 <strong>Películas de referencia:</strong> <em>The Impossible</em> (2012) — el tsunami real de Indonesia 2004, misma mecánica. <em>San Andreas</em> también muestra el tsunami en San Francisco."
+  },
+  {
+    id:3,icon:"⛰️",code:"DELTA",
+    color:"#92400e",tagBg:"rgba(146,64,14,.18)",tagTxt:"#fcd34d",
+    name:"Volcán Cumbre Vieja, La Palma, Canarias",
+    title:"El deslizamiento que puede generar un megatsunami atlántico",
+    desc:"Cumbre Vieja es un volcán activo en las Islas Canarias (España). Erupcionó en 2021. Un flanco occidental del volcán (500 km³ de roca) está inestable. Si colapsa al mar, generaría un megatsunami con olas de 25 metros que llegaría a las costas de Europa, África y la costa Este de EE.UU. en horas.",
+    coords:"28°34'N, 17°50'W",
+    hint:"<strong>Qué buscar en Google Earth:</strong> El volcán Cumbre Vieja y la colada de lava de 2021 que llegó al mar (verás terreno negro nuevo en la costa). El acantilado occidental del volcán (el flanco inestable). La isla de La Palma entera es el volcán. Mide la distancia a las costas de Portugal, Marruecos y Brasil.",
+    geo:"Volcán de punto caliente en la placa Africana. Las erupciones repetidas añaden peso al flanco occidental que se desliza lentamente hacia el océano. La erupción de 2021 mostró que el sistema sigue activo.",
+    film:"🎬 <strong>Películas de referencia:</strong> <em>La maldición de La Palma</em> (documental) y el episodio sobre megatsunamis de <em>Perfect Disaster</em> (Discovery). Busca en YouTube 'megatsunami Canarias simulación'."
+  },
+  {
+    id:4,icon:"🏝️",code:"ÉPSILON",
+    color:"#6d28d9",tagBg:"rgba(109,40,217,.18)",tagTxt:"#c4b5fd",
+    name:"Yakarta, Java, Indonesia",
+    title:"La megalópolis que se hunde en el mar",
+    desc:"Yakarta, capital de Indonesia y hogar de 34 millones de personas, se hunde entre 25 y 40 cm al año — la ciudad más rápidamente hundida del mundo. Para 2050, el 95% del norte de la ciudad estará bajo el agua. La extracción masiva de agua subterránea está destruyendo el suelo. Indonesia ya decidió trasladar su capital.",
+    coords:"6°12'S, 106°49'E",
+    hint:"<strong>Qué buscar en Google Earth:</strong> Usa la vista histórica para comparar Yakarta entre 2000 y hoy — observa cómo la línea de costa cambió. Busca el norte de la ciudad (Jakarta Utara) y nota cuán plano y bajo está. Mide la elevación con Google Earth. Busca el proyecto de dique gigante 'Great Garuda' en construcción.",
+    geo:"Yakarta está sobre sedimentos blandos del delta del río Ciliwung. La extracción masiva de agua subterránea colapsa los poros del suelo (subsidencia). Combinado con el aumento del nivel del mar por cambio climático = hundimiento acelerado.",
+    film:"🎬 <strong>Películas de referencia:</strong> <em>Waterworld</em> (1995) muestra un futuro donde todo está inundado. Documental: <em>Atlantis Rising</em> (Netflix) sobre ciudades en riesgo de hundirse."
+  }
+];
+
+const GLOSSARY=[
+  {t:"Placa tectónica",d:"Gran fragmento de la corteza terrestre que se mueve. Su choque genera volcanes y terremotos."},
+  {t:"Subducción",d:"Una placa oceánica se hunde bajo otra. Genera los terremotos más potentes y cadenas de volcanes."},
+  {t:"Falla geológica",d:"Fractura en la roca con desplazamiento. Las fallas activas producen terremotos."},
+  {t:"Caldera volcánica",d:"Depresión gigante formada cuando un supervolcán colapsa tras vaciar su cámara magmática."},
+  {t:"Subsidencia",d:"Hundimiento lento del suelo por extracción de agua, petróleo o peso de edificios sobre sedimentos blandos."},
+  {t:"Morfología del terreno",d:"Forma del paisaje: pendientes, valles, crestas. Determina cómo fluirán agua, lava o deslizamientos."},
+  {t:"Litología",d:"Tipo de roca del terreno. Define resistencia, permeabilidad y comportamiento ante sismos o lluvias."},
+  {t:"Punto caliente (hotspot)",d:"Zona del manto con temperatura extrema que genera volcanes en medio de las placas. Ej: Hawái, Yellowstone."}
+];
+
+let RV={risk:"",pop:"",time:""};
+let timerInt=null;
+
+function selR(el,grp){
+  const mapId={risk:"rg-risk",pop:"rg-pop",time:"rg-time"};
+  document.querySelectorAll(`#${mapId[grp]} .rbtn`).forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  RV[grp]=el.textContent.trim();
+  updProg();
+}
+
+function toggleGloss(){
+  const p=document.getElementById('gloss-panel');
+  const a=document.getElementById('gloss-arrow');
+  const open=p.style.display!=='none';
+  p.style.display=open?'none':'block';
+  a.textContent=open?'▼':'▲';
+}
+
+function updProg(){
+  const fields=['f-lugar','f-ev','f-why','f-cities','f-ruta','f-arg'];
+  let n=fields.filter(id=>(document.getElementById(id)||{}).value?.trim().length>5).length;
+  if(RV.risk) n++;
+  const tot=7;
+  const pct=Math.round(n/tot*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-txt').textContent=n+' / '+tot;
+  document.getElementById('btn-send').disabled=(n<5);
+}
+
+function startTimer(){
+  let s=90*60;
+  timerInt=setInterval(()=>{
+    s--;
+    if(s<=0){clearInterval(timerInt);document.getElementById('timer-el').textContent='00:00';return;}
+    const m=Math.floor(s/60),sec=s%60;
+    document.getElementById('timer-el').textContent=(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;
+    if(s<=600) document.getElementById('timer-el').classList.add('warn');
+  },1000);
+}
+
+function startMission(){
+  const team=document.getElementById('team-name').value.trim();
+  const m1=document.getElementById('m1').value.trim();
+  const midx=document.getElementById('mission-sel').value;
+  if(!team||!m1||midx===''){alert('Completa: nombre del equipo, al menos un agente y la misión asignada.');return;}
+  const M=MISSIONS[parseInt(midx)];
+  document.getElementById('hdr-team').textContent=team;
+  document.getElementById('mission-hero').innerHTML=`
+    <div style="background:${M.tagBg};border:1px solid ${M.color}44;border-radius:12px;padding:1.25rem">
+      <div class="m-tag" style="background:${M.tagBg};border:1px solid ${M.color}66;color:${M.tagTxt}">${M.icon} MISIÓN ${M.code} — AMENAZA GLOBAL</div>
+      <div class="m-hero-title">${M.title}</div>
+      <p style="font-size:.85rem;color:#94a3b8;line-height:1.65;margin-bottom:.9rem">${M.desc}</p>
+      <div class="coords">📍 ${M.coords}</div>
+      <div class="hint-block">${M.hint}<span class="geo-context">⚙️ Contexto geológico: ${M.geo}</span></div>
+      <div style="margin-top:.85rem;background:#080c14;border-radius:8px;padding:.7rem .9rem;font-size:.78rem;color:#94a3b8;line-height:1.6">${M.film}</div>
+    </div>`;
+  document.getElementById('gloss-grid').innerHTML=GLOSSARY.map(g=>`<div class="g-card"><div class="g-term">${g.t}</div><div class="g-def">${g.d}</div></div>`).join('');
+  showScreen('screen-mission');
+  startTimer();
+}
+
+function submitReport(){
+  clearInterval(timerInt);
+  const midx=parseInt(document.getElementById('mission-sel').value);
+  const M=MISSIONS[midx];
+  const riskColor={Moderado:"#22c55e",Alto:"#f59e0b",Catastrófico:"#ef4444","Extinción regional":"#7c3aed"}[RV.risk]||"#64748b";
+  document.getElementById('result-main').innerHTML=`
+    <div style="font-size:2rem;margin-bottom:.5rem">${M.icon}</div>
+    <h3 style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:.25rem">Misión ${M.code} — ${M.name}</h3>
+    <p style="font-size:.78rem;color:#64748b;margin-bottom:1rem">Equipo: ${document.getElementById('team-name').value} &nbsp;|&nbsp; ${[document.getElementById('m1').value,document.getElementById('m2').value,document.getElementById('m3').value].filter(Boolean).join(', ')}</p>
+    <div class="rf"><div class="rl">LUGAR LOCALIZADO</div><div class="rv big">${document.getElementById('f-lugar').value||M.name}</div></div>
+    <div class="rf"><div class="rl">COORDENADAS</div><div class="rv" style="font-family:monospace">${document.getElementById('f-lat').value||'—'} / ${document.getElementById('f-lon').value||'—'}</div></div>
+    <div class="rf"><div class="rl">NIVEL DE RIESGO</div><span class="risk-pill" style="background:${riskColor}22;color:${riskColor};border:1px solid ${riskColor}55">${RV.risk||'—'}</span></div>
+    <div class="rf"><div class="rl">POBLACIÓN EN PELIGRO</div><div class="rv">${RV.pop||'—'}</div></div>
+    <div class="rf"><div class="rl">TIEMPO DE ALERTA</div><div class="rv">${RV.time||'—'}</div></div>
+    <div class="rf"><div class="rl">EVIDENCIAS EN GOOGLE EARTH</div><div class="rv">${document.getElementById('f-ev').value||'—'}</div></div>
+    <div class="rf"><div class="rl">CIUDADES AFECTADAS</div><div class="rv">${document.getElementById('f-cities').value||'—'}</div></div>
+    <div class="rf"><div class="rl">POR QUÉ OCURRE AQUÍ</div><div class="rv">${document.getElementById('f-why').value||'—'}</div></div>
+    <div class="rf"><div class="rl">RUTA DE EVACUACIÓN</div><div class="rv">${document.getElementById('f-ruta').value||'—'}</div></div>
+    <div class="rf"><div class="rl">ACCIÓN DEL GEÓLOGO</div><div class="rv">${document.getElementById('f-geo').value||'—'}</div></div>
+    <div class="rf"><div class="rl">ARGUMENTO FINAL</div><div class="rv" style="font-style:italic;color:#e2e8f0">"${document.getElementById('f-arg').value||'—'}"</div></div>
+  `;
+  document.getElementById('result-terms').innerHTML='<div class="rf"><div class="rl">GLOSARIO — TÉRMINOS QUE PUEDES USAR EN LA PRESENTACIÓN</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">'+GLOSSARY.map(g=>`<span style="background:#1e3a5f;border:1px solid #2d4f7a;border-radius:6px;padding:4px 10px;font-size:.73rem;color:#fbbf24">${g.t}</span>`).join('')+'</div></div>';
+  showScreen('screen-results');
+}
+
+function resetApp(){
+  clearInterval(timerInt);
+  RV={risk:"",pop:"",time:""};
+  document.querySelectorAll('.rbtn').forEach(b=>b.classList.remove('sel'));
+  ['f-lugar','f-lat','f-lon','f-ev','f-why','f-cities','f-ruta','f-geo','f-arg'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('gloss-panel').style.display='none';
+  document.getElementById('gloss-arrow').textContent='▼';
+  document.getElementById('timer-el').textContent='90:00';
+  document.getElementById('timer-el').classList.remove('warn');
+  document.getElementById('btn-send').disabled=true;
+  showScreen('screen-intro');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
